@@ -15,11 +15,13 @@ class App extends StatelessWidget {
 
         return MaterialApp(
           debugShowCheckedModeBanner: false,
+
           restorationScopeId: 'app',
 
           // Theme
-          theme: ThemeData(),
-          darkTheme: ThemeData.dark(),
+          theme: ThemeData.from(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+          ),
 
           // Routing
           onGenerateRoute: (RouteSettings routeSettings) {

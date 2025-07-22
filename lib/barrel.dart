@@ -10,3 +10,4 @@ export 'models/expense.dart';
 export 'models/income.dart';
 export 'views/add_expense_view.dart';
 export 'views/home_view.dart';
+export 'widgets/expense_item.dart';
