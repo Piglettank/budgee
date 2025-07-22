@@ -2,4 +2,11 @@
 // To update, run 'make barrel'.
 // Exporting all files from: lib
 
+export 'app.dart';
+export 'barrel_flutter.dart';
+export 'database.dart';
 export 'main.dart';
+export 'models/expense.dart';
+export 'models/income.dart';
+export 'views/add_expense_view.dart';
+export 'views/home_view.dart';
