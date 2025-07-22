@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptionsq of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Standard",
+            "type": "dart",
+            "request": "launch",
+        },
+        {
+            "name": "Launch Chrome",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:8080",
+        },
+        {
+            "name": "flutter_web",
+            "cwd": "knalleappen",
+            "request": "launch",
+            "program": "lib/main",
+            "type": "dart",
+            "args": [
+                "-d",
+                "Chrome",
+            ]
+        },
+    ]
+}
