@@ -18,28 +18,29 @@ class Database {
     sharedPreferences = await SharedPreferences.getInstance();
   }
 
-  static Future<void> addExpense(Expense expense) async {
+  static Future<Expense> addEmptyExpense() async {
     int index = expenseIndex ?? 0;
     final String nameKey = '$expenseBaseName$index';
     final String valueKey = '$expenseBaseValue$index';
 
-    await sharedPreferences.setString(nameKey, expense.name);
-    await sharedPreferences.setDouble(valueKey, expense.amount);
+    await sharedPreferences.setString(nameKey, '');
+    await sharedPreferences.setDouble(valueKey, 0);
 
-    index++;
-    await sharedPreferences.setInt(expenseIndexKey, index);
+    await sharedPreferences.setInt(expenseIndexKey, index + 1);
+    return Expense(0, '', index: index);
   }
 
-  static Future<void> addIncome(Income income) async {
-    int index = incomeIndex ?? 0;
-    final String nameKey = '$incomeBaseName$index';
-    final String valueKey = '$incomeBaseValue$index';
+  static Future<void> saveExpense(Expense expense) async {
+    int index = expense.index ?? 0;
+    final String nameKey = '$expenseBaseName$index';
+    final String valueKey = '$expenseBaseValue$index';
 
-    await sharedPreferences.setString(nameKey, income.name);
-    await sharedPreferences.setDouble(valueKey, income.amount);
-
-    index++;
-    await sharedPreferences.setInt(incomeIndexKey, index);
+    if (expense.name.isEmpty && expense.amount <= 0) {
+      removeExpense(expense);
+    } else {
+      await sharedPreferences.setString(nameKey, expense.name);
+      await sharedPreferences.setDouble(valueKey, expense.amount);
+    }
   }
 
   static Future<void> removeExpense(Expense expense) async {
@@ -51,6 +52,31 @@ class Database {
 
     await sharedPreferences.remove(nameKey);
     await sharedPreferences.remove(valueKey);
+  }
+
+  static Future<Income> addEmptyIncome() async {
+    int index = incomeIndex ?? 0;
+    final String nameKey = '$incomeBaseName$index';
+    final String valueKey = '$incomeBaseValue$index';
+
+    await sharedPreferences.setString(nameKey, '');
+    await sharedPreferences.setDouble(valueKey, 0);
+
+    await sharedPreferences.setInt(incomeIndexKey, index + 1);
+    return Income(0, '', index: index);
+  }
+
+  static Future<void> saveIncome(Income income) async {
+    int index = income.index ?? 0;
+    final String nameKey = '$incomeBaseName$index';
+    final String valueKey = '$incomeBaseValue$index';
+
+    if (income.name.isEmpty && income.amount <= 0) {
+      removeIncome(income);
+    } else {
+      await sharedPreferences.setString(nameKey, income.name);
+      await sharedPreferences.setDouble(valueKey, income.amount);
+    }
   }
 
   static Future<void> removeIncome(Income income) async {
@@ -84,7 +110,7 @@ class Database {
 
     final incomes = <Income>[];
 
-    for (int i = 0; i < expenseIndex!; i++) {
+    for (int i = 0; i < incomeIndex!; i++) {
       final income = getIndexedIncome(i);
       if (income != null) {
         incomes.add(income);

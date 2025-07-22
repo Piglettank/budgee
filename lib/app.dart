@@ -5,41 +5,39 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: loadApp(context),
-      builder: (context, asyncSnapshot) {
-        if (!asyncSnapshot.hasData) {
-          // loading screen
-          return const Center(child: CircularProgressIndicator());
-        }
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => BudgetProvider()),
+      ],
+      child: FutureBuilder(
+        future: loadApp(context),
+        builder: (context, asyncSnapshot) {
+          if (!asyncSnapshot.hasData) {
+            // loading screen
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            restorationScopeId: 'app',
+            theme: theme(),
 
-          restorationScopeId: 'app',
-
-          // Theme
-          theme: ThemeData.from(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
-          ),
-
-          // Routing
-          onGenerateRoute: (RouteSettings routeSettings) {
-            return MaterialPageRoute<dynamic>(
-              settings: routeSettings,
-              builder: (BuildContext context) {
-                final name = routeSettings.name?.split('?').first;
-                switch (name) {
-                  case AddExpenseView.routeName:
-                    return const AddExpenseView();
-                  default:
-                    return const HomeView();
-                }
-              },
-            );
-          },
-        );
-      },
+            // Routing
+            onGenerateRoute: (RouteSettings routeSettings) {
+              return MaterialPageRoute<dynamic>(
+                settings: routeSettings,
+                builder: (BuildContext context) {
+                  final name = routeSettings.name?.split('?').first;
+                  switch (name) {
+                    default:
+                      return const HomeView();
+                  }
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -49,5 +47,23 @@ class App extends StatelessWidget {
     await Future.wait(futures);
 
     return true;
+  }
+
+  ThemeData theme() {
+    final baseTheme = ThemeData.from(
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+    );
+
+    return baseTheme.copyWith(
+      inputDecorationTheme: InputDecorationTheme(
+        constraints: BoxConstraints(maxHeight: 24),
+        hintStyle: baseTheme.textTheme.bodyMedium!.copyWith(
+          color: Colors.black38,
+        ),
+        isDense: true,
+        contentPadding: EdgeInsets.zero,
+        border: InputBorder.none,
+      ),
+    );
   }
 }

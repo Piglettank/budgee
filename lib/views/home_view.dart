@@ -1,5 +1,17 @@
 import 'package:budgee/barrel.dart';
 
+enum AppState {
+  normal,
+  chooseAction,
+  enterExpense,
+  enterIncome;
+
+  bool get isNormal => this == normal;
+  bool get isChooseAction => this == chooseAction;
+  bool get isEnterExpense => this == enterExpense;
+  bool get isEnterIncome => this == enterIncome;
+}
+
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
@@ -8,15 +20,26 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  bool _chooseActionMode = false;
+  List<Expense> expenses = [];
+  List<Income> incomes = [];
+  AppState state = AppState.normal;
+  Expense? selectedExpense;
+  Income? selectedIncome;
 
   @override
   Widget build(BuildContext context) {
-    final expenses = Database.getAllExpenses();
+    expenses = Database.getAllExpenses();
     expenses.sort((a, b) => b.amount.compareTo(a.amount));
 
-    final incomes = Database.getAllIncomes();
+    incomes = Database.getAllIncomes();
     incomes.sort((a, b) => b.amount.compareTo(a.amount));
+
+    final provider = context.watch<BudgetProvider>();
+    selectedExpense = provider.selectedExpense;
+    selectedIncome = provider.selectedIncome;
+    state = provider.state;
+
+    print(state);
 
     return Scaffold(
       appBar: AppBar(
@@ -28,40 +51,13 @@ class _HomeViewState extends State<HomeView> {
           ListView(
             padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
             children: <Widget>[
-              Text('Overview', style: Theme.of(context).textTheme.labelLarge),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Incomes'),
-                  Text(incomes.totalAmount().round().toInt().toString()),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Expenses'),
-                  Text(expenses.totalAmount().round().toInt().toString()),
-                ],
-              ),
-              Divider(color: Colors.black12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Leftover'),
-                  Text(
-                    (incomes.totalAmount() - expenses.totalAmount())
-                        .round()
-                        .toInt()
-                        .toString(),
-                  ),
-                ],
-              ),
+              ..._overview(),
 
               SizedBox(height: 20),
-              Text('Expenses', style: Theme.of(context).textTheme.labelLarge),
-              for (final expense in expenses)
-                ExpenseItem(expense, onTap: () => _removeExpense(expense)),
+              ..._incomes(),
+
+              SizedBox(height: 20),
+              ..._expenses(),
             ],
           ),
           _overlay(),
@@ -71,48 +67,23 @@ class _HomeViewState extends State<HomeView> {
         crossAxisAlignment: CrossAxisAlignment.end,
         spacing: 20,
         mainAxisSize: MainAxisSize.min,
-        children: [
-          _addIncomeButton(),
-          _addExpenseButton(),
-          FloatingActionButton(
-            onPressed: _toggleMode,
-            tooltip: 'Increment',
-            child: AnimatedRotation(
-              turns: _chooseActionMode ? 0.25 : 0,
-              duration: Duration(milliseconds: 200),
-              child: _chooseActionMode
-                  ? const Icon(Icons.close)
-                  : const Icon(Icons.add),
-            ),
-          ),
-        ],
+        children: [_addIncomeButton(), _addExpenseButton(), Fab()],
       ),
     );
   }
 
-  Future<void> _toggleMode() async {
-    setState(() {
-      _chooseActionMode = !_chooseActionMode;
-    });
-  }
-
-  Future<void> _removeExpense(Expense expense) async {
-    await Database.removeExpense(expense);
-    if (context.mounted) {
-      setState(() {});
-    }
-  }
-
   Widget _overlay() {
     return Visibility(
-      visible: _chooseActionMode,
+      visible: state == AppState.chooseAction,
       maintainState: true,
       maintainAnimation: true,
       child: GestureDetector(
-        onTap: () => setState(() => _chooseActionMode = false),
+        onTap: () {
+          context.read<BudgetProvider>().state = AppState.normal;
+        },
         child: Center(
           child: AnimatedOpacity(
-            opacity: _chooseActionMode ? 1 : 0.1,
+            opacity: state == AppState.chooseAction ? 1 : 0.1,
             duration: Duration(milliseconds: 200),
             child: Container(
               width: double.infinity,
@@ -127,7 +98,7 @@ class _HomeViewState extends State<HomeView> {
 
   Widget _addExpenseButton() {
     return Visibility(
-      visible: _chooseActionMode,
+      visible: state == AppState.chooseAction,
       child: ElevatedButton(
         child: SizedBox(
           height: 60,
@@ -141,10 +112,11 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         onPressed: () async {
-          await AddExpenseView.show(context);
-          setState(() {
-            _chooseActionMode = false;
-          });
+          final expense = await Database.addEmptyExpense();
+          if (mounted) {
+            context.read<BudgetProvider>().selectedExpense = expense;
+            context.read<BudgetProvider>().state = AppState.normal;
+          }
         },
       ),
     );
@@ -152,7 +124,7 @@ class _HomeViewState extends State<HomeView> {
 
   Widget _addIncomeButton() {
     return Visibility(
-      visible: _chooseActionMode,
+      visible: state == AppState.chooseAction,
       child: ElevatedButton(
         child: SizedBox(
           height: 60,
@@ -166,12 +138,81 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         onPressed: () async {
-          await AddExpenseView.show(context);
-          setState(() {
-            _chooseActionMode = false;
-          });
+          final income = await Database.addEmptyIncome();
+          if (mounted) {
+            context.read<BudgetProvider>().selectedIncome = income;
+            context.read<BudgetProvider>().state = AppState.normal;
+          }
         },
       ),
     );
+  }
+
+  List<Widget> _overview() {
+    return [
+      Text('Overview', style: Theme.of(context).textTheme.labelLarge),
+
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Incomes'),
+          Text(incomes.totalAmount().round().toInt().toString()),
+        ],
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Expenses'),
+          Text(expenses.totalAmount().round().toInt().toString()),
+        ],
+      ),
+      Divider(color: Colors.black12),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Leftover'),
+          Text(
+            (incomes.totalAmount() - expenses.totalAmount())
+                .round()
+                .toInt()
+                .toString(),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  List<Widget> _expenses() {
+    final expenseItems = <Widget>[];
+    for (final expense in expenses) {
+      final selected = expense.index == selectedExpense?.index;
+      if (selected) {
+        expenseItems.add(AddExpenseTile());
+      } else {
+        expenseItems.add(ExpenseItem(expense));
+      }
+    }
+
+    return [
+      Text('Expenses', style: Theme.of(context).textTheme.labelLarge),
+      ...expenseItems,
+    ];
+  }
+
+  List<Widget> _incomes() {
+    final incomeItems = <Widget>[];
+    for (final income in incomes) {
+      final selected = income.index == selectedIncome?.index;
+      if (selected) {
+        incomeItems.add(AddIncomeTile());
+      } else {
+        incomeItems.add(IncomeItem(income));
+      }
+    }
+
+    return [
+      Text('Incomes', style: Theme.of(context).textTheme.labelLarge),
+      ...incomeItems,
+    ];
   }
 }
