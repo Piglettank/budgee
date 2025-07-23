@@ -27,24 +27,27 @@ class _HomeViewState extends State<HomeView> {
     state = provider.state;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Budget boi'),
-      ),
       body: Stack(
         children: [
           GestureDetector(
             onTap: () => provider.clearSelection(),
             child: ListView(
-              padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
               children: <Widget>[
-                ..._overview(),
+                _header(),
 
-                SizedBox(height: 20),
-                ..._incomes(),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20),
+                      ..._incomes(),
 
-                SizedBox(height: 20),
-                ..._expenses(),
+                      SizedBox(height: 20),
+                      ..._expenses(),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -136,42 +139,96 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  List<Widget> _overview() {
-    return [
-      Text('Overview', style: Theme.of(context).textTheme.headlineSmall),
+  Widget _header() {
+    return Container(
+      // decoration: BoxDecoration(
+      //   color: Theme.of(context).colorScheme.surfaceContainerLow,
+      // ),
+      padding: EdgeInsets.fromLTRB(12, 36, 12, 0),
 
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Incomes', style: Theme.of(context).textTheme.bodyLarge),
           Text(
-            incomes.totalAmount().roundedString(),
-            style: Theme.of(context).textTheme.bodyLarge,
+            'Budget Boy',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 8),
+
+          _faintBox(
+            color: Theme.of(context).colorScheme.primary,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Incomes',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Text(
+                      incomes.totalAmount().roundedString(),
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Expenses',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Text(
+                      expenses.totalAmount().roundedString(),
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SizedBox(
+                    width: 120,
+                    child: Divider(color: Colors.black12),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Leftover',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Text(
+                      items.totalAmount().roundedString(),
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('Expenses', style: Theme.of(context).textTheme.bodyLarge),
-          Text(
-            expenses.totalAmount().roundedString(),
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ],
+    );
+  }
+
+  Widget _faintBox({required Color color, required Widget child}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color.withAlpha(30),
+        borderRadius: BorderRadius.circular(12),
       ),
-      Divider(color: Colors.black12),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('Leftover', style: Theme.of(context).textTheme.bodyLarge),
-          Text(
-            items.totalAmount().roundedString(),
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ],
-      ),
-    ];
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+
+      child: child,
+    );
   }
 
   List<Widget> _expenses() {
