@@ -21,7 +21,7 @@ class ItemTile extends StatelessWidget {
               },
               child: Text(
                 item.name,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
           ),
@@ -36,7 +36,7 @@ class ItemTile extends StatelessWidget {
               child: Text(
                 '${item.amount.round().toInt()}',
                 textAlign: TextAlign.end,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
           ),

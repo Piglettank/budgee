@@ -148,26 +148,38 @@ class _HomeViewState extends State<HomeView> {
 
   List<Widget> _overview() {
     return [
-      Text('Overview', style: Theme.of(context).textTheme.labelLarge),
+      Text('Overview', style: Theme.of(context).textTheme.headlineSmall),
 
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Incomes'),
-          Text(incomes.totalAmount().roundedString()),
+          Text('Incomes', style: Theme.of(context).textTheme.bodyLarge),
+          Text(
+            incomes.totalAmount().roundedString(),
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
         ],
       ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Expenses'),
-          Text(expenses.totalAmount().roundedString()),
+          Text('Expenses', style: Theme.of(context).textTheme.bodyLarge),
+          Text(
+            expenses.totalAmount().roundedString(),
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
         ],
       ),
       Divider(color: Colors.black12),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [Text('Leftover'), Text(items.totalAmount().roundedString())],
+        children: [
+          Text('Leftover', style: Theme.of(context).textTheme.bodyLarge),
+          Text(
+            items.totalAmount().roundedString(),
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ],
       ),
     ];
   }
@@ -184,7 +196,7 @@ class _HomeViewState extends State<HomeView> {
     }
 
     return [
-      Text('Expenses', style: Theme.of(context).textTheme.labelLarge),
+      Text('Expenses', style: Theme.of(context).textTheme.headlineSmall),
       ...expenseItems,
     ];
   }
@@ -201,7 +213,7 @@ class _HomeViewState extends State<HomeView> {
     }
 
     return [
-      Text('Incomes', style: Theme.of(context).textTheme.labelLarge),
+      Text('Incomes', style: Theme.of(context).textTheme.headlineSmall),
       ...incomeItems,
     ];
   }
