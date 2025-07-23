@@ -1,7 +1,9 @@
-o Click on amoount to change amoount
+# Todo list
+
+o Click on amount to change amoount
 o Show better where I am right now
-o check box should move to amount when done 
+o check box should move to amount when done
 o Clicking outside should unfocus
 o Text a bit small
 
-- store items as stringified jsons
+o store items as stringified jsons

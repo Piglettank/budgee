@@ -12,5 +12,5 @@ export 'state_management/app_state.dart';
 export 'state_management/budget_provider.dart';
 export 'views/home_view.dart';
 export 'widgets/enter_info_tile.dart';
-export 'widgets/expense_item.dart';
+export 'widgets/item_tile.dart';
 export 'widgets/fab.dart';

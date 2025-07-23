@@ -21,6 +21,14 @@ class BudgetItem {
   bool get isValid {
     return (amount >= 0 || name.isNotEmpty) && type.isNotEmpty;
   }
+
+  Map<String, dynamic> toJson() {
+    return {'amount': amount, 'name': name, 'type': type};
+  }
+
+  factory BudgetItem.fromJson(Map<String, dynamic> json) {
+    return BudgetItem(json['amount'], json['name'], json['type']);
+  }
 }
 
 extension BudgetItemListExtensions on List<BudgetItem> {

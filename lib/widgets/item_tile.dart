@@ -7,13 +7,14 @@ class ItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1.0),
+      padding: const EdgeInsets.symmetric(vertical: 3.0),
       child: Row(
         children: [
           if (item.isIncome)
-            Icon(Icons.arrow_back, size: 16, color: Colors.green)
+            Icon(Icons.arrow_back, size: 20, color: Colors.green)
           else
-            Icon(Icons.arrow_forward, size: 16, color: Colors.redAccent),
+            Icon(Icons.arrow_forward, size: 20, color: Colors.redAccent),
+          SizedBox(width: 2),
           Expanded(
             child: InkWell(
               onTap: () {

@@ -56,7 +56,6 @@ class App extends StatelessWidget {
 
     return baseTheme.copyWith(
       inputDecorationTheme: InputDecorationTheme(
-        constraints: BoxConstraints(maxHeight: 24),
         hintStyle: baseTheme.textTheme.bodyMedium!.copyWith(
           color: Colors.black38,
         ),
@@ -64,7 +63,7 @@ class App extends StatelessWidget {
           borderSide: BorderSide(color: baseTheme.primaryColor),
         ),
         isDense: true,
-        contentPadding: EdgeInsets.zero,
+        contentPadding: EdgeInsets.symmetric(vertical: 2, horizontal: 4),
         border: InputBorder.none,
       ),
     );

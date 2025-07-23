@@ -186,7 +186,14 @@ class _HomeViewState extends State<HomeView> {
     }
 
     return [
-      Text('Expenses', style: Theme.of(context).textTheme.headlineSmall),
+      Text(
+        'EXPENSES',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: Colors.black54,
+        ),
+      ),
       ...expenseItems,
     ];
   }
@@ -203,7 +210,14 @@ class _HomeViewState extends State<HomeView> {
     }
 
     return [
-      Text('Incomes', style: Theme.of(context).textTheme.headlineSmall),
+      Text(
+        'INCOMES',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: Colors.black54,
+        ),
+      ),
       ...incomeItems,
     ];
   }
