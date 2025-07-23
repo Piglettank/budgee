@@ -13,6 +13,7 @@ class BudgetProvider extends ChangeNotifier {
     _init();
   }
 
+  // TODO(pig): Not the cleanest solution
   void _init() {
     nameFocus.addListener(() {
       if (nameFocus.hasFocus) {

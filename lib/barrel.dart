@@ -4,7 +4,8 @@
 
 export 'app.dart';
 export 'barrel_flutter.dart';
-export 'database.dart';
+export 'database/database_budget_item.dart';
+export 'database/database.dart';
 export 'main.dart';
 export 'models/expense.dart';
 export 'models/income.dart';
