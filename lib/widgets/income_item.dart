@@ -8,7 +8,7 @@ class IncomeItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.read<BudgetProvider>().selectedIncome = income;
+        context.read<BudgetProvider>().setSelectedIncome(income);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 1.0),

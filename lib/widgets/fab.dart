@@ -28,6 +28,8 @@ class Fab extends StatelessWidget {
       );
     }
 
+    final amountFocused = provider.amountFocus.hasFocus;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       spacing: 16,
@@ -41,29 +43,28 @@ class Fab extends StatelessWidget {
               await Database.removeIncome(selectedIncome!);
             }
             if (context.mounted) {
-              context.read<BudgetProvider>().selectedExpense = null;
-              context.read<BudgetProvider>().selectedIncome = null;
+              context.read<BudgetProvider>().clearSelection();
             }
           },
           child: Icon(Icons.delete),
         ),
         FloatingActionButton(
           onPressed: () async {
-            if (state.isEnterExpense) {
-              await Database.saveExpense(selectedExpense!);
+            if (!amountFocused) {
+              provider.amountFocus.requestFocus();
+              return;
             } else {
-              await Database.saveIncome(selectedIncome!);
-            }
-            if (context.mounted) {
-              context.read<BudgetProvider>().selectedExpense = null;
-              context.read<BudgetProvider>().selectedIncome = null;
+              if (state.isEnterExpense) {
+                await Database.saveExpense(selectedExpense!);
+              } else {
+                await Database.saveIncome(selectedIncome!);
+              }
+              if (context.mounted) {
+                context.read<BudgetProvider>().clearSelection();
+              }
             }
           },
-          child: AnimatedRotation(
-            turns: state == AppState.chooseAction ? 0.25 : 0,
-            duration: Duration(milliseconds: 200),
-            child: Icon(Icons.done),
-          ),
+          child: Icon(!amountFocused ? Icons.arrow_forward : Icons.done),
         ),
       ],
     );

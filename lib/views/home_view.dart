@@ -48,17 +48,20 @@ class _HomeViewState extends State<HomeView> {
       ),
       body: Stack(
         children: [
-          ListView(
-            padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
-            children: <Widget>[
-              ..._overview(),
+          GestureDetector(
+            onTap: () => provider.clearSelection(),
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
+              children: <Widget>[
+                ..._overview(),
 
-              SizedBox(height: 20),
-              ..._incomes(),
+                SizedBox(height: 20),
+                ..._incomes(),
 
-              SizedBox(height: 20),
-              ..._expenses(),
-            ],
+                SizedBox(height: 20),
+                ..._expenses(),
+              ],
+            ),
           ),
           _overlay(),
         ],
@@ -114,7 +117,7 @@ class _HomeViewState extends State<HomeView> {
         onPressed: () async {
           final expense = await Database.addEmptyExpense();
           if (mounted) {
-            context.read<BudgetProvider>().selectedExpense = expense;
+            context.read<BudgetProvider>().setSelectedExpense(expense);
             context.read<BudgetProvider>().state = AppState.normal;
           }
         },
@@ -140,7 +143,7 @@ class _HomeViewState extends State<HomeView> {
         onPressed: () async {
           final income = await Database.addEmptyIncome();
           if (mounted) {
-            context.read<BudgetProvider>().selectedIncome = income;
+            context.read<BudgetProvider>().setSelectedIncome(income);
             context.read<BudgetProvider>().state = AppState.normal;
           }
         },

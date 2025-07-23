@@ -60,6 +60,9 @@ class App extends StatelessWidget {
         hintStyle: baseTheme.textTheme.bodyMedium!.copyWith(
           color: Colors.black38,
         ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: baseTheme.primaryColor),
+        ),
         isDense: true,
         contentPadding: EdgeInsets.zero,
         border: InputBorder.none,

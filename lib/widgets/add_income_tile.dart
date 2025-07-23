@@ -57,7 +57,7 @@ class _AddIncomeTileState extends State<AddIncomeTile> {
                   context.read<BudgetProvider>().selectedIncome!,
                 );
                 if (context.mounted) {
-                  context.read<BudgetProvider>().selectedIncome = null;
+                  context.read<BudgetProvider>().clearSelection();
                 }
               },
             ),

@@ -10,11 +10,16 @@ class AddExpenseTile extends StatefulWidget {
 class _AddExpenseTileState extends State<AddExpenseTile> {
   final nameController = TextEditingController();
   final amountController = TextEditingController();
+  late FocusNode nameFocus;
+  late FocusNode amountFocus;
 
   @override
   void initState() {
     super.initState();
-    final expense = context.read<BudgetProvider>().selectedExpense;
+    final provider = context.read<BudgetProvider>();
+    final expense = provider.selectedExpense;
+    nameFocus = provider.nameFocus;
+    amountFocus = provider.amountFocus;
     nameController.text = expense!.name;
     if (expense.amount > 0) {
       amountController.text = expense.amount.round().toInt().toString();
@@ -23,6 +28,8 @@ class _AddExpenseTileState extends State<AddExpenseTile> {
 
   @override
   Widget build(BuildContext context) {
+    final focusCost = context.watch<BudgetProvider>().focusCost;
+
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainer,
       padding: EdgeInsets.symmetric(vertical: 1),
@@ -31,11 +38,11 @@ class _AddExpenseTileState extends State<AddExpenseTile> {
           Expanded(
             child: TextField(
               controller: nameController,
-              autofocus: true,
+              autofocus: !focusCost,
+              focusNode: nameFocus,
               onChanged: (value) {
                 context.read<BudgetProvider>().selectedExpense!.name = value;
               },
-              style: Theme.of(context).textTheme.bodyMedium,
               textInputAction: TextInputAction.next,
               decoration: InputDecoration(hintText: 'Name'),
             ),
@@ -43,8 +50,9 @@ class _AddExpenseTileState extends State<AddExpenseTile> {
           Expanded(
             child: TextField(
               controller: amountController,
-              style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.end,
+              focusNode: amountFocus,
+              autofocus: focusCost,
               onChanged: (value) {
                 final amount = double.tryParse(value) ?? 0;
                 context.read<BudgetProvider>().selectedExpense!.amount = amount;
@@ -57,7 +65,7 @@ class _AddExpenseTileState extends State<AddExpenseTile> {
                   context.read<BudgetProvider>().selectedExpense!,
                 );
                 if (context.mounted) {
-                  context.read<BudgetProvider>().selectedExpense = null;
+                  context.read<BudgetProvider>().clearSelection();
                 }
               },
             ),
