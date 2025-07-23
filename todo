@@ -2,5 +2,6 @@ o Click on amoount to change amoount
 o Show better where I am right now
 o check box should move to amount when done 
 o Clicking outside should unfocus
-- Text a bit small
-- 
+o Text a bit small
+
+- store items as stringified jsons
