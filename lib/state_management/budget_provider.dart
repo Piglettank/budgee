@@ -14,16 +14,7 @@ class BudgetProvider extends ChangeNotifier {
 
   // TODO(pig): Not the cleanest solution
   void _init() {
-    nameFocus.addListener(() {
-      if (nameFocus.hasFocus) {
-        notifyListeners();
-      }
-    });
-    amountFocus.addListener(() {
-      if (amountFocus.hasFocus) {
-        notifyListeners();
-      }
-    });
+    nameFocus.addListener(notifyListeners);
   }
 
   BudgetItem? get selectedItem => _selectedItem;

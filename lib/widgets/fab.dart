@@ -27,7 +27,7 @@ class Fab extends StatelessWidget {
       );
     }
 
-    final amountFocused = provider.amountFocus.hasFocus;
+    final nameFocused = provider.nameFocus.hasFocus;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -45,17 +45,17 @@ class Fab extends StatelessWidget {
         ),
         FloatingActionButton(
           onPressed: () async {
-            if (!amountFocused) {
+            if (nameFocused) {
               provider.amountFocus.requestFocus();
               return;
-            } else {
-              await Database.saveItem(selectedItem!);
-              if (context.mounted) {
-                context.read<BudgetProvider>().clearSelection();
-              }
+            }
+
+            await Database.saveItem(selectedItem!);
+            if (context.mounted) {
+              context.read<BudgetProvider>().clearSelection();
             }
           },
-          child: Icon(!amountFocused ? Icons.arrow_forward : Icons.done),
+          child: Icon(nameFocused ? Icons.arrow_forward : Icons.done),
         ),
       ],
     );

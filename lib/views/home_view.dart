@@ -1,15 +1,5 @@
 import 'package:budgee/barrel.dart';
 
-enum AppState {
-  normal,
-  chooseAction,
-  enterInfo;
-
-  bool get isNormal => this == normal;
-  bool get isChooseAction => this == chooseAction;
-  bool get isEnterIncome => this == enterInfo;
-}
-
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
