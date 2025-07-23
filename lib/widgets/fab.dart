@@ -7,8 +7,7 @@ class Fab extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<BudgetProvider>();
     final state = provider.state;
-    final selectedExpense = provider.selectedExpense;
-    final selectedIncome = provider.selectedIncome;
+    final selectedItem = provider.selectedItem;
 
     if (state.isNormal || state.isChooseAction) {
       return FloatingActionButton(
@@ -37,11 +36,7 @@ class Fab extends StatelessWidget {
         FloatingActionButton(
           heroTag: 1,
           onPressed: () async {
-            if (state.isEnterExpense) {
-              await Database.removeExpense(selectedExpense!);
-            } else {
-              await Database.removeIncome(selectedIncome!);
-            }
+            await Database.removeItem(selectedItem!);
             if (context.mounted) {
               context.read<BudgetProvider>().clearSelection();
             }
@@ -54,11 +49,7 @@ class Fab extends StatelessWidget {
               provider.amountFocus.requestFocus();
               return;
             } else {
-              if (state.isEnterExpense) {
-                await Database.saveExpense(selectedExpense!);
-              } else {
-                await Database.saveIncome(selectedIncome!);
-              }
+              await Database.saveItem(selectedItem!);
               if (context.mounted) {
                 context.read<BudgetProvider>().clearSelection();
               }

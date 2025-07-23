@@ -1,8 +1,8 @@
 import 'package:budgee/barrel.dart';
 
-class ExpenseItem extends StatelessWidget {
-  final Expense expense;
-  const ExpenseItem(this.expense, {super.key});
+class ItemTile extends StatelessWidget {
+  final BudgetItem item;
+  const ItemTile(this.item, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -10,14 +10,17 @@ class ExpenseItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 1.0),
       child: Row(
         children: [
-          Icon(Icons.arrow_forward, size: 16, color: Colors.redAccent),
+          if (item.isIncome)
+            Icon(Icons.arrow_back, size: 16, color: Colors.green)
+          else
+            Icon(Icons.arrow_forward, size: 16, color: Colors.redAccent),
           Expanded(
             child: InkWell(
               onTap: () {
-                context.read<BudgetProvider>().setSelectedExpense(expense);
+                context.read<BudgetProvider>().setSelectedItem(item);
               },
               child: Text(
-                expense.name,
+                item.name,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
@@ -25,13 +28,13 @@ class ExpenseItem extends StatelessWidget {
           Expanded(
             child: InkWell(
               onTap: () {
-                context.read<BudgetProvider>().setSelectedExpense(
-                  expense,
+                context.read<BudgetProvider>().setSelectedItem(
+                  item,
                   focusCost: true,
                 );
               },
               child: Text(
-                '${expense.amount.round().toInt()}',
+                '${item.amount.round().toInt()}',
                 textAlign: TextAlign.end,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),

@@ -3,13 +3,11 @@ import 'package:budgee/barrel.dart';
 enum AppState {
   normal,
   chooseAction,
-  enterExpense,
-  enterIncome;
+  enterInfo;
 
   bool get isNormal => this == normal;
   bool get isChooseAction => this == chooseAction;
-  bool get isEnterExpense => this == enterExpense;
-  bool get isEnterIncome => this == enterIncome;
+  bool get isEnterIncome => this == enterInfo;
 }
 
 class HomeView extends StatefulWidget {
@@ -20,26 +18,23 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  List<Expense> expenses = [];
-  List<Income> incomes = [];
+  List<BudgetItem> items = [];
+  List<BudgetItem> incomes = [];
+  List<BudgetItem> expenses = [];
+  BudgetItem? selectedItem;
   AppState state = AppState.normal;
-  Expense? selectedExpense;
-  Income? selectedIncome;
 
   @override
   Widget build(BuildContext context) {
-    expenses = Database.getAllExpenses();
-    expenses.sort((a, b) => b.amount.compareTo(a.amount));
+    items = Database.getAllItems();
+    items.sort((a, b) => b.amount.compareTo(a.amount));
 
-    incomes = Database.getAllIncomes();
-    incomes.sort((a, b) => b.amount.compareTo(a.amount));
+    incomes = items.incomes();
+    expenses = items.expenses();
 
     final provider = context.watch<BudgetProvider>();
-    selectedExpense = provider.selectedExpense;
-    selectedIncome = provider.selectedIncome;
+    selectedItem = provider.selectedItem;
     state = provider.state;
-
-    print(state);
 
     return Scaffold(
       appBar: AppBar(
@@ -115,9 +110,9 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         onPressed: () async {
-          final expense = await Database.addEmptyExpense();
+          final item = await Database.addEmptyItem(type: BudgetTypes.expense);
           if (mounted) {
-            context.read<BudgetProvider>().setSelectedExpense(expense);
+            context.read<BudgetProvider>().setSelectedItem(item);
             context.read<BudgetProvider>().state = AppState.normal;
           }
         },
@@ -141,9 +136,9 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         onPressed: () async {
-          final income = await Database.addEmptyIncome();
+          final item = await Database.addEmptyItem(type: BudgetTypes.income);
           if (mounted) {
-            context.read<BudgetProvider>().setSelectedIncome(income);
+            context.read<BudgetProvider>().setSelectedItem(item);
             context.read<BudgetProvider>().state = AppState.normal;
           }
         },
@@ -159,28 +154,20 @@ class _HomeViewState extends State<HomeView> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text('Incomes'),
-          Text(incomes.totalAmount().round().toInt().toString()),
+          Text(incomes.totalAmount().roundedString()),
         ],
       ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text('Expenses'),
-          Text(expenses.totalAmount().round().toInt().toString()),
+          Text(expenses.totalAmount().roundedString()),
         ],
       ),
       Divider(color: Colors.black12),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('Leftover'),
-          Text(
-            (incomes.totalAmount() - expenses.totalAmount())
-                .round()
-                .toInt()
-                .toString(),
-          ),
-        ],
+        children: [Text('Leftover'), Text(items.totalAmount().roundedString())],
       ),
     ];
   }
@@ -188,11 +175,11 @@ class _HomeViewState extends State<HomeView> {
   List<Widget> _expenses() {
     final expenseItems = <Widget>[];
     for (final expense in expenses) {
-      final selected = expense.index == selectedExpense?.index;
+      final selected = expense.index == selectedItem?.index;
       if (selected) {
-        expenseItems.add(AddExpenseTile());
+        expenseItems.add(EnterInfoTile());
       } else {
-        expenseItems.add(ExpenseItem(expense));
+        expenseItems.add(ItemTile(expense));
       }
     }
 
@@ -205,11 +192,11 @@ class _HomeViewState extends State<HomeView> {
   List<Widget> _incomes() {
     final incomeItems = <Widget>[];
     for (final income in incomes) {
-      final selected = income.index == selectedIncome?.index;
+      final selected = income.index == selectedItem?.index;
       if (selected) {
-        incomeItems.add(AddIncomeTile());
+        incomeItems.add(EnterInfoTile());
       } else {
-        incomeItems.add(IncomeItem(income));
+        incomeItems.add(ItemTile(income));
       }
     }
 

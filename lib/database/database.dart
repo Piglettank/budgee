@@ -3,144 +3,67 @@ import 'package:budgee/barrel.dart';
 class Database {
   static late SharedPreferences sharedPreferences;
 
-  static const String expenseIndexKey = 'expense_index';
-  static const String expenseBaseName = 'expense_name_';
-  static const String expenseBaseValue = 'expense_value_';
-
-  static const String incomeIndexKey = 'income_index';
-  static const String incomeBaseName = 'income_name_';
-  static const String incomeBaseValue = 'income_value_';
-
-  static int? get expenseIndex => sharedPreferences.getInt(expenseIndexKey);
-  static int? get incomeIndex => sharedPreferences.getInt(incomeIndexKey);
-
   static Future<void> init() async {
     sharedPreferences = await SharedPreferences.getInstance();
   }
 
-  static Future<Expense> addEmptyExpense() async {
-    int index = expenseIndex ?? 0;
-    final String nameKey = '$expenseBaseName$index';
-    final String valueKey = '$expenseBaseValue$index';
+  static const String itemIndexKey = 'budget_item_index';
+  static int get nextItemIndex => sharedPreferences.getInt(itemIndexKey) ?? 0;
 
-    await sharedPreferences.setString(nameKey, '');
-    await sharedPreferences.setDouble(valueKey, 0);
+  static String nameKey(int index) => 'budget_item_${index}_name';
+  static String amountKey(int index) => 'budget_item_${index}_amount';
+  static String typeKey(int index) => 'budget_item_${index}_type';
 
-    await sharedPreferences.setInt(expenseIndexKey, index + 1);
-    return Expense(0, '', index: index);
+  static Future<BudgetItem> addEmptyItem({String? type}) async {
+    int index = nextItemIndex;
+    final item = BudgetItem.empty(type ?? BudgetTypes.expense);
+    item.index = index;
+
+    await saveItem(item);
+
+    await sharedPreferences.setInt(itemIndexKey, index + 1);
+    return item;
   }
 
-  static Future<void> saveExpense(Expense expense) async {
-    int index = expense.index ?? 0;
-    final String nameKey = '$expenseBaseName$index';
-    final String valueKey = '$expenseBaseValue$index';
+  static Future<void> saveItem(BudgetItem item) async {
+    if (item.index == null) return;
+    int index = item.index!;
 
-    if (expense.name.isEmpty && expense.amount <= 0) {
-      removeExpense(expense);
-    } else {
-      await sharedPreferences.setString(nameKey, expense.name);
-      await sharedPreferences.setDouble(valueKey, expense.amount);
-    }
+    await sharedPreferences.setString(nameKey(index), item.name);
+    await sharedPreferences.setDouble(amountKey(index), item.amount);
+    await sharedPreferences.setString(typeKey(index), item.type);
   }
 
-  static Future<void> removeExpense(Expense expense) async {
-    if (expense.index == null) return;
+  static Future<void> removeItem(BudgetItem item) async {
+    if (item.index == null) return;
 
-    final index = expense.index;
-    final String nameKey = '$expenseBaseName$index';
-    final String valueKey = '$expenseBaseValue$index';
+    final index = item.index!;
 
-    await sharedPreferences.remove(nameKey);
-    await sharedPreferences.remove(valueKey);
+    await sharedPreferences.remove(nameKey(index));
+    await sharedPreferences.remove(amountKey(index));
+    await sharedPreferences.remove(typeKey(index));
   }
 
-  static Future<Income> addEmptyIncome() async {
-    int index = incomeIndex ?? 0;
-    final String nameKey = '$incomeBaseName$index';
-    final String valueKey = '$incomeBaseValue$index';
+  static List<BudgetItem> getAllItems() {
+    final items = <BudgetItem>[];
 
-    await sharedPreferences.setString(nameKey, '');
-    await sharedPreferences.setDouble(valueKey, 0);
-
-    await sharedPreferences.setInt(incomeIndexKey, index + 1);
-    return Income(0, '', index: index);
-  }
-
-  static Future<void> saveIncome(Income income) async {
-    int index = income.index ?? 0;
-    final String nameKey = '$incomeBaseName$index';
-    final String valueKey = '$incomeBaseValue$index';
-
-    if (income.name.isEmpty && income.amount <= 0) {
-      removeIncome(income);
-    } else {
-      await sharedPreferences.setString(nameKey, income.name);
-      await sharedPreferences.setDouble(valueKey, income.amount);
-    }
-  }
-
-  static Future<void> removeIncome(Income income) async {
-    if (income.index == null) return;
-
-    final index = income.index;
-    final String nameKey = '$incomeBaseName$index';
-    final String valueKey = '$incomeBaseValue$index';
-
-    await sharedPreferences.remove(nameKey);
-    await sharedPreferences.remove(valueKey);
-  }
-
-  static List<Expense> getAllExpenses() {
-    if (expenseIndex == null) return [];
-
-    final expenses = <Expense>[];
-
-    for (int i = 0; i < expenseIndex!; i++) {
-      final expense = getIndexedExpense(i);
-      if (expense != null) {
-        expenses.add(expense);
+    for (int i = 0; i < nextItemIndex; i++) {
+      final item = getIndexedItem(i);
+      if (item != null) {
+        items.add(item);
       }
     }
 
-    return expenses;
+    return items;
   }
 
-  static List<Income> getAllIncomes() {
-    if (incomeIndex == null) return [];
+  static BudgetItem? getIndexedItem(int index) {
+    final double? amount = sharedPreferences.getDouble(amountKey(index));
+    final String? name = sharedPreferences.getString(nameKey(index));
+    final String? type = sharedPreferences.getString(typeKey(index));
 
-    final incomes = <Income>[];
+    if (amount == null || name == null || type == null) return null;
 
-    for (int i = 0; i < incomeIndex!; i++) {
-      final income = getIndexedIncome(i);
-      if (income != null) {
-        incomes.add(income);
-      }
-    }
-
-    return incomes;
-  }
-
-  static Expense? getIndexedExpense(int index) {
-    final String nameKey = '$expenseBaseName$index';
-    final String valueKey = '$expenseBaseValue$index';
-
-    final double? amount = sharedPreferences.getDouble(valueKey);
-    final String? name = sharedPreferences.getString(nameKey);
-
-    if (amount == null || name == null) return null;
-
-    return Expense(amount, name, index: index);
-  }
-
-  static Income? getIndexedIncome(int index) {
-    final String nameKey = '$incomeBaseName$index';
-    final String valueKey = '$incomeBaseValue$index';
-
-    final double? amount = sharedPreferences.getDouble(valueKey);
-    final String? name = sharedPreferences.getString(nameKey);
-
-    if (amount == null || name == null) return null;
-
-    return Income(amount, name, index: index);
+    return BudgetItem(amount, name, type, index: index);
   }
 }

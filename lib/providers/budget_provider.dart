@@ -1,8 +1,7 @@
 import 'package:budgee/barrel.dart';
 
 class BudgetProvider extends ChangeNotifier {
-  Expense? _selectedExpense;
-  Income? _selectedIncome;
+  BudgetItem? _selectedItem;
   AppState _state = AppState.normal;
   bool focusCost = false;
 
@@ -27,34 +26,22 @@ class BudgetProvider extends ChangeNotifier {
     });
   }
 
-  Income? get selectedIncome => _selectedIncome;
-  void setSelectedIncome(Income? income, {bool focusCost = false}) {
-    _selectedIncome = income;
-    _selectedExpense = null;
-    this.focusCost = focusCost;
-    notifyListeners();
-  }
-
-  Expense? get selectedExpense => _selectedExpense;
-  void setSelectedExpense(Expense? expense, {bool focusCost = false}) {
-    _selectedExpense = expense;
-    _selectedIncome = null;
+  BudgetItem? get selectedItem => _selectedItem;
+  void setSelectedItem(BudgetItem? item, {bool focusCost = false}) {
+    _selectedItem = item;
     this.focusCost = focusCost;
     notifyListeners();
   }
 
   void clearSelection() {
-    _selectedExpense = null;
-    _selectedIncome = null;
+    _selectedItem = null;
+    focusCost = false;
     notifyListeners();
   }
 
   AppState get state {
-    if (_selectedExpense != null) {
-      return AppState.enterExpense;
-    }
-    if (_selectedIncome != null) {
-      return AppState.enterIncome;
+    if (_selectedItem != null) {
+      return AppState.enterInfo;
     }
 
     return _state;

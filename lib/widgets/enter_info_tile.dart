@@ -1,28 +1,35 @@
 import 'package:budgee/barrel.dart';
 
-class AddIncomeTile extends StatefulWidget {
-  const AddIncomeTile({super.key});
+class EnterInfoTile extends StatefulWidget {
+  const EnterInfoTile({super.key});
 
   @override
-  State<AddIncomeTile> createState() => _AddIncomeTileState();
+  State<EnterInfoTile> createState() => _EnterInfoTileState();
 }
 
-class _AddIncomeTileState extends State<AddIncomeTile> {
+class _EnterInfoTileState extends State<EnterInfoTile> {
   final nameController = TextEditingController();
   final amountController = TextEditingController();
+  late FocusNode nameFocus;
+  late FocusNode amountFocus;
 
   @override
   void initState() {
     super.initState();
-    final income = context.read<BudgetProvider>().selectedIncome;
-    nameController.text = income!.name;
-    if (income.amount > 0) {
-      amountController.text = income.amount.round().toInt().toString();
+    final provider = context.read<BudgetProvider>();
+    final item = provider.selectedItem;
+    nameFocus = provider.nameFocus;
+    amountFocus = provider.amountFocus;
+    nameController.text = item!.name;
+    if (item.amount > 0) {
+      amountController.text = item.amount.round().toInt().toString();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final focusCost = context.watch<BudgetProvider>().focusCost;
+
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainer,
       padding: EdgeInsets.symmetric(vertical: 1),
@@ -31,11 +38,11 @@ class _AddIncomeTileState extends State<AddIncomeTile> {
           Expanded(
             child: TextField(
               controller: nameController,
-              autofocus: true,
+              autofocus: !focusCost,
+              focusNode: nameFocus,
               onChanged: (value) {
-                context.read<BudgetProvider>().selectedIncome!.name = value;
+                context.read<BudgetProvider>().selectedItem!.name = value;
               },
-              style: Theme.of(context).textTheme.bodyMedium,
               textInputAction: TextInputAction.next,
               decoration: InputDecoration(hintText: 'Name'),
             ),
@@ -43,18 +50,19 @@ class _AddIncomeTileState extends State<AddIncomeTile> {
           Expanded(
             child: TextField(
               controller: amountController,
-              style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.end,
+              focusNode: amountFocus,
+              autofocus: focusCost,
               onChanged: (value) {
                 final amount = double.tryParse(value) ?? 0;
-                context.read<BudgetProvider>().selectedIncome!.amount = amount;
+                context.read<BudgetProvider>().selectedItem!.amount = amount;
               },
               textInputAction: TextInputAction.done,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(hintText: 'Cost'),
               onSubmitted: (_) async {
-                await Database.saveIncome(
-                  context.read<BudgetProvider>().selectedIncome!,
+                await Database.saveItem(
+                  context.read<BudgetProvider>().selectedItem!,
                 );
                 if (context.mounted) {
                   context.read<BudgetProvider>().clearSelection();

@@ -4,15 +4,12 @@
 
 export 'app.dart';
 export 'barrel_flutter.dart';
-export 'database/database_budget_item.dart';
+export 'base_extensions.dart';
 export 'database/database.dart';
 export 'main.dart';
-export 'models/expense.dart';
-export 'models/income.dart';
+export 'models/budget_item.dart';
 export 'providers/budget_provider.dart';
 export 'views/home_view.dart';
-export 'widgets/add_expense_tile.dart';
-export 'widgets/add_income_tile.dart';
+export 'widgets/enter_info_tile.dart';
 export 'widgets/expense_item.dart';
 export 'widgets/fab.dart';
-export 'widgets/income_item.dart';
