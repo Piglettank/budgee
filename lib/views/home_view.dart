@@ -1,4 +1,5 @@
 import 'package:budgee/barrel.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -21,6 +22,10 @@ class _HomeViewState extends State<HomeView> {
 
     incomes = items.incomes();
     expenses = items.expenses();
+
+    setState(() {
+      state = AppState.chooseAction;
+    });
 
     final provider = context.watch<BudgetProvider>();
     selectedItem = provider.selectedItem;
@@ -151,10 +156,10 @@ class _HomeViewState extends State<HomeView> {
         children: [
           Text(
             'Budget Boy',
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
+            style: GoogleFonts.dynaPuff(
               fontSize: 36,
               fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           SizedBox(height: 8),
@@ -163,16 +168,58 @@ class _HomeViewState extends State<HomeView> {
             color: Theme.of(context).colorScheme.primary,
             child: Column(
               children: [
+                // Stack(
+                //   children: [
+                //     Container(
+                //       width: double.infinity,
+                //       height: 28,
+                //       decoration: BoxDecoration(
+                //         color: const Color.fromARGB(255, 115, 159, 86),
+
+                //         borderRadius: BorderRadius.circular(100),
+                //       ),
+                //     ),
+                //     Positioned.fill(
+                //       child: FractionallySizedBox(
+                //         widthFactor: 0.12,
+                //         heightFactor: 1,
+                //         alignment: Alignment.centerRight,
+                //         child: Container(
+                //           decoration: BoxDecoration(
+                //             color: const Color.fromARGB(255, 199, 126, 73),
+                //             borderRadius: BorderRadius.horizontal(
+                //               right: Radius.circular(100),
+                //             ),
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+
+                // // easy variant
+                // LinearProgressIndicator(
+                //   backgroundColor: Colors.blue,
+                //   color: Colors.green,
+                //   value: 0.6,
+                //   borderRadius: BorderRadius.circular(100),
+                //   minHeight: 16,
+                //   trackGap: 20,
+                // ),
+                // SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Incomes',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: GoogleFonts.shantellSans(
+                        fontSize: 18,
+                        color: const Color.fromARGB(255, 75, 98, 60),
+                      ),
                     ),
                     Text(
                       incomes.totalAmount().roundedString(),
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: GoogleFonts.robotoMono(fontSize: 16),
                     ),
                   ],
                 ),
@@ -183,11 +230,14 @@ class _HomeViewState extends State<HomeView> {
                   children: [
                     Text(
                       'Expenses',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: GoogleFonts.shantellSans(
+                        fontSize: 18,
+                        color: const Color.fromARGB(255, 152, 80, 27),
+                      ),
                     ),
                     Text(
                       expenses.totalAmount().roundedString(),
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: GoogleFonts.robotoMono(fontSize: 16),
                     ),
                   ],
                 ),
@@ -203,11 +253,11 @@ class _HomeViewState extends State<HomeView> {
                   children: [
                     Text(
                       'Leftover',
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: GoogleFonts.shantellSans(fontSize: 16),
                     ),
                     Text(
                       items.totalAmount().roundedString(),
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: GoogleFonts.robotoMono(fontSize: 16),
                     ),
                   ],
                 ),
@@ -245,10 +295,9 @@ class _HomeViewState extends State<HomeView> {
     return [
       Text(
         'EXPENSES',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-          color: Colors.black54,
+        style: GoogleFonts.dynaPuff(
+          fontSize: 18,
+          color: Theme.of(context).colorScheme.primary,
         ),
       ),
       ...expenseItems,
@@ -269,10 +318,9 @@ class _HomeViewState extends State<HomeView> {
     return [
       Text(
         'INCOMES',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-          color: Colors.black54,
+        style: GoogleFonts.dynaPuff(
+          fontSize: 18,
+          color: Theme.of(context).colorScheme.primary,
         ),
       ),
       ...incomeItems,

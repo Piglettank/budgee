@@ -1,4 +1,5 @@
 import 'package:budgee/barrel.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ItemTile extends StatelessWidget {
   final BudgetItem item;
@@ -22,7 +23,7 @@ class ItemTile extends StatelessWidget {
               },
               child: Text(
                 item.name,
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: GoogleFonts.shantellSans(fontSize: 16),
               ),
             ),
           ),
@@ -37,7 +38,7 @@ class ItemTile extends StatelessWidget {
               child: Text(
                 '${item.amount.round().toInt()}',
                 textAlign: TextAlign.end,
-                style: Theme.of(context).textTheme.bodyLarge,
+                style: GoogleFonts.robotoMono(fontSize: 16),
               ),
             ),
           ),
