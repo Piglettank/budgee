@@ -3,6 +3,9 @@ import 'barrel.dart';
 class App extends StatelessWidget {
   const App({super.key});
 
+  static const Color gentleGreen = Color.fromARGB(255, 75, 98, 60);
+  static const Color gentleRed = Color.fromARGB(255, 176, 79, 46);
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(

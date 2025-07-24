@@ -214,7 +214,7 @@ class _HomeViewState extends State<HomeView> {
                       'Incomes',
                       style: GoogleFonts.shantellSans(
                         fontSize: 18,
-                        color: const Color.fromARGB(255, 75, 98, 60),
+                        color: App.gentleGreen,
                       ),
                     ),
                     Text(
@@ -232,7 +232,7 @@ class _HomeViewState extends State<HomeView> {
                       'Expenses',
                       style: GoogleFonts.shantellSans(
                         fontSize: 18,
-                        color: const Color.fromARGB(255, 152, 80, 27),
+                        color: App.gentleRed,
                       ),
                     ),
                     Text(

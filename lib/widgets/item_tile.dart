@@ -12,9 +12,9 @@ class ItemTile extends StatelessWidget {
       child: Row(
         children: [
           if (item.isIncome)
-            Icon(Icons.arrow_back, size: 20, color: Colors.green)
+            Icon(Icons.arrow_back, size: 20, color: App.gentleGreen)
           else
-            Icon(Icons.arrow_forward, size: 20, color: Colors.redAccent),
+            Icon(Icons.arrow_forward, size: 20, color: App.gentleRed),
           SizedBox(width: 2),
           Expanded(
             child: InkWell(
