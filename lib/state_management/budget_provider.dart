@@ -8,6 +8,11 @@ class BudgetProvider extends ChangeNotifier {
   final nameFocus = FocusNode();
   final amountFocus = FocusNode();
 
+  List<BudgetItem> items = [];
+  List<String> tags = [];
+
+  bool showingTagList = true;
+
   BudgetProvider() {
     _init();
   }
@@ -17,10 +22,28 @@ class BudgetProvider extends ChangeNotifier {
     nameFocus.addListener(notifyListeners);
   }
 
+  void updateState() {
+    items = Database.getAllItems();
+    tags = Database.getAllTags();
+    items.sort((a, b) => b.amount.compareTo(a.amount));
+
+    notifyListeners();
+  }
+
   BudgetItem? get selectedItem => _selectedItem;
   void setSelectedItem(BudgetItem? item, {bool focusCost = false}) {
     _selectedItem = item;
     this.focusCost = focusCost;
+    notifyListeners();
+  }
+
+  void showTagList() {
+    showingTagList = true;
+    notifyListeners();
+  }
+
+  void hideTagList() {
+    showingTagList = false;
     notifyListeners();
   }
 

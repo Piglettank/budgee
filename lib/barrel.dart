@@ -4,6 +4,7 @@
 
 export 'app.dart';
 export 'barrel_flutter.dart';
+export 'database_helper.dart';
 export 'database.dart';
 export 'helpers/data_types_extensions.dart';
 export 'main.dart';
@@ -12,5 +13,6 @@ export 'state_management/app_state.dart';
 export 'state_management/budget_provider.dart';
 export 'views/home_view.dart';
 export 'widgets/enter_info_tile.dart';
-export 'widgets/item_tile.dart';
 export 'widgets/fab.dart';
+export 'widgets/item_tile.dart';
+export 'widgets/summary.dart';

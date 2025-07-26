@@ -61,12 +61,7 @@ class _EnterInfoTileState extends State<EnterInfoTile> {
               keyboardType: TextInputType.number,
               decoration: InputDecoration(hintText: 'Cost'),
               onSubmitted: (_) async {
-                await Database.saveItem(
-                  context.read<BudgetProvider>().selectedItem!,
-                );
-                if (context.mounted) {
-                  context.read<BudgetProvider>().clearSelection();
-                }
+                DatabaseHelper.updateSelectedItem(context);
               },
             ),
           ),

@@ -52,6 +52,20 @@ class Database {
     return items;
   }
 
+  static List<String> getAllTags() {
+    final tags = <String>{};
+
+    for (int i = 0; i < nextItemIndex; i++) {
+      final item = getIndexedItem(i);
+      final hasTag = item != null && item.tag != null && item.tag!.isNotEmpty;
+      if (hasTag) {
+        tags.add(item.tag!);
+      }
+    }
+
+    return tags.toList();
+  }
+
   static BudgetItem? getIndexedItem(int index) {
     final String? storedJson = sharedPreferences.getString(
       itemStorageKey(index),

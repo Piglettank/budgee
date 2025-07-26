@@ -1,5 +1,4 @@
 import 'package:budgee/barrel.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -17,15 +16,9 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    items = Database.getAllItems();
-    items.sort((a, b) => b.amount.compareTo(a.amount));
-
+    items = context.read<BudgetProvider>().items;
     incomes = items.incomes();
     expenses = items.expenses();
-
-    setState(() {
-      state = AppState.chooseAction;
-    });
 
     final provider = context.watch<BudgetProvider>();
     selectedItem = provider.selectedItem;
@@ -35,28 +28,34 @@ class _HomeViewState extends State<HomeView> {
       body: Stack(
         children: [
           GestureDetector(
-            onTap: () => provider.clearSelection(),
+            onTap: () {
+              DatabaseHelper.updateSelectedItem(context);
+              context.read<BudgetProvider>().state = AppState.normal;
+            },
             child: ListView(
+              padding: EdgeInsets.fromLTRB(12, 56, 12, 0),
               children: <Widget>[
-                _header(),
-
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 20),
-                      ..._incomes(),
-
-                      SizedBox(height: 20),
-                      ..._expenses(),
-                    ],
+                Text(
+                  'Budget Boy',
+                  style: GoogleFonts.dynaPuff(
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
+                SizedBox(height: 8),
+                Summary(),
+
+                SizedBox(height: 20),
+                ..._incomes(),
+
+                SizedBox(height: 20),
+                ..._expenses(),
               ],
             ),
           ),
           _overlay(),
+          _tagList(),
         ],
       ),
       floatingActionButton: Column(
@@ -73,19 +72,14 @@ class _HomeViewState extends State<HomeView> {
       visible: state == AppState.chooseAction,
       maintainState: true,
       maintainAnimation: true,
-      child: GestureDetector(
-        onTap: () {
-          context.read<BudgetProvider>().state = AppState.normal;
-        },
-        child: Center(
-          child: AnimatedOpacity(
-            opacity: state == AppState.chooseAction ? 1 : 0.1,
-            duration: Duration(milliseconds: 200),
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: BoxDecoration(color: Colors.black54),
-            ),
+      child: Center(
+        child: AnimatedOpacity(
+          opacity: state == AppState.chooseAction ? 1 : 0.1,
+          duration: Duration(milliseconds: 100),
+          child: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(color: Colors.black54),
           ),
         ),
       ),
@@ -110,6 +104,7 @@ class _HomeViewState extends State<HomeView> {
         onPressed: () async {
           final item = await Database.addEmptyItem(type: BudgetTypes.expense);
           if (mounted) {
+            context.read<BudgetProvider>().updateState();
             context.read<BudgetProvider>().setSelectedItem(item);
             context.read<BudgetProvider>().state = AppState.normal;
           }
@@ -136,148 +131,12 @@ class _HomeViewState extends State<HomeView> {
         onPressed: () async {
           final item = await Database.addEmptyItem(type: BudgetTypes.income);
           if (mounted) {
+            context.read<BudgetProvider>().updateState();
             context.read<BudgetProvider>().setSelectedItem(item);
             context.read<BudgetProvider>().state = AppState.normal;
           }
         },
       ),
-    );
-  }
-
-  Widget _header() {
-    return Container(
-      // decoration: BoxDecoration(
-      //   color: Theme.of(context).colorScheme.surfaceContainerLow,
-      // ),
-      padding: EdgeInsets.fromLTRB(12, 36, 12, 0),
-
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Budget Boy',
-            style: GoogleFonts.dynaPuff(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          SizedBox(height: 8),
-
-          _faintBox(
-            color: Theme.of(context).colorScheme.primary,
-            child: Column(
-              children: [
-                // Stack(
-                //   children: [
-                //     Container(
-                //       width: double.infinity,
-                //       height: 28,
-                //       decoration: BoxDecoration(
-                //         color: const Color.fromARGB(255, 115, 159, 86),
-
-                //         borderRadius: BorderRadius.circular(100),
-                //       ),
-                //     ),
-                //     Positioned.fill(
-                //       child: FractionallySizedBox(
-                //         widthFactor: 0.12,
-                //         heightFactor: 1,
-                //         alignment: Alignment.centerRight,
-                //         child: Container(
-                //           decoration: BoxDecoration(
-                //             color: const Color.fromARGB(255, 199, 126, 73),
-                //             borderRadius: BorderRadius.horizontal(
-                //               right: Radius.circular(100),
-                //             ),
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //   ],
-                // ),
-
-                // // easy variant
-                // LinearProgressIndicator(
-                //   backgroundColor: Colors.blue,
-                //   color: Colors.green,
-                //   value: 0.6,
-                //   borderRadius: BorderRadius.circular(100),
-                //   minHeight: 16,
-                //   trackGap: 20,
-                // ),
-                // SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Incomes',
-                      style: GoogleFonts.shantellSans(
-                        fontSize: 18,
-                        color: App.gentleGreen,
-                      ),
-                    ),
-                    Text(
-                      incomes.totalAmount().roundedString(),
-                      style: GoogleFonts.robotoMono(fontSize: 16),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Expenses',
-                      style: GoogleFonts.shantellSans(
-                        fontSize: 18,
-                        color: App.gentleRed,
-                      ),
-                    ),
-                    Text(
-                      expenses.totalAmount().roundedString(),
-                      style: GoogleFonts.robotoMono(fontSize: 16),
-                    ),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: SizedBox(
-                    width: 120,
-                    child: Divider(color: Colors.black12),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Leftover',
-                      style: GoogleFonts.shantellSans(fontSize: 16),
-                    ),
-                    Text(
-                      items.totalAmount().roundedString(),
-                      style: GoogleFonts.robotoMono(fontSize: 16),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _faintBox({required Color color, required Widget child}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color.withAlpha(30),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-
-      child: child,
     );
   }
 
@@ -325,5 +184,43 @@ class _HomeViewState extends State<HomeView> {
       ),
       ...incomeItems,
     ];
+  }
+
+  Widget _tagList() {
+    final tags = context.read<BudgetProvider>().tags;
+
+    return Positioned(
+      bottom: 88,
+      right: 80,
+      child: Material(
+        clipBehavior: Clip.hardEdge,
+        elevation: 2,
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        child: Container(
+          constraints: BoxConstraints(maxHeight: 200, maxWidth: 240),
+          child: ListView(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            children: [
+              for (final tag in tags) Text(tag),
+              InkWell(
+                onTap: () {},
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 12,
+                  ),
+                  child: Text(
+                    '+ Add tag ',
+                    style: GoogleFonts.shantellSans(fontSize: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
